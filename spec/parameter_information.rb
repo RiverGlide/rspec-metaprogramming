@@ -1,6 +1,6 @@
 def nullary();end
-def required_position(one);end
-def optional_position(one=nil);end
+def one_required_positional(one);end
+def one_optional_positional(one=nil);end
 
 RSpec::Matchers.define :satisfy_the_definition_of do |method|
   match do |arguments|
@@ -24,29 +24,34 @@ RSpec::Matchers.define :satisfy_the_definition_of do |method|
   # but actually contained 3 positional and missing required and additional unknown keywords
 end
 
-describe "parameter matcher" do
-  it "matches on an empty parameter list and a nullary" do
-    empty_parameter_list = []
-    expect(empty_parameter_list).to satisfy_the_definition_of(method(:nullary))
+describe "argument matcher" do
+  it "matches on an empty argument list and a nullary" do
+    empty_argument_list = []
+    expect(empty_argument_list).to satisfy_the_definition_of(method(:nullary))
   end
 
-  it "matches on an empty parameter list and an optional positional parameter" do
-    empty_parameter_list = []
-    expect(empty_parameter_list).to satisfy_the_definition_of(method(:optional_position))
+  it "matches on an empty argument list and an optional positional parameter" do
+    empty_argument_list = []
+    expect(empty_argument_list).to satisfy_the_definition_of(method(:one_optional_positional))
   end
 
-  it "doesn't match on an empty parameter list and a method with a required positional parameter" do
-    empty_parameter_list = []
-    expect(empty_parameter_list).not_to satisfy_the_definition_of(method(:required_position))
+  it "doesn't match on an empty argument list and a method with a required positional parameter" do
+    empty_argument_list = []
+    expect(empty_argument_list).not_to satisfy_the_definition_of(method(:one_required_positional))
   end
 
-  it "matches on a single parameter and an optional positional parameter" do
-    a_single_parameter = [""]
-    expect(a_single_parameter).to satisfy_the_definition_of(method(:optional_position))
+  it "matches on a single argument and an optional positional parameter" do
+    a_single_argument = [""]
+    expect(a_single_argument).to satisfy_the_definition_of(method(:one_optional_positional))
   end
 
-  it "matches on a single parameter and a required positional parameter" do
-    a_single_parameter = [""]
-    expect(a_single_parameter).to satisfy_the_definition_of(method(:required_position))
+  it "matches on a single argument and a required positional parameter" do
+    a_single_argument = [""]
+    expect(a_single_argument).to satisfy_the_definition_of(method(:one_required_positional))
+  end
+
+  it "doesn't match on two arguments and a single required positional parameter" do
+    two_arguments = ["", ""]
+    expect(two_arguments).not_to satisfy_the_definition_of(method(:one_required_positional))
   end
 end
