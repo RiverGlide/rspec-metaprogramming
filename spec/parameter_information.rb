@@ -45,4 +45,8 @@ describe "parameter matcher" do
     expect(a_single_parameter).to satisfy_the_definition_of(method(:optional_position))
   end
 
+  it "matches on a single parameter and a required positional parameter" do
+    a_single_parameter = [""]
+    expect(a_single_parameter).to satisfy_the_definition_of(method(:required_position))
+  end
 end
