@@ -4,10 +4,9 @@ def optional_position(one=nil);end
 
 RSpec::Matchers.define :satisfy_the_definition_of do |method|
   match do |arguments|
-    required_positional_parameters = method.parameters.select { |p| p.first == :req }.count
-    optional_positional_parameters = method.parameters.select { |p| p.first == :opt }.count
-    min_positional_parameters = required_positional_parameters
-    max_positional_parameters = required_positional_parameters + optional_positional_parameters
+    parameter_counts = method.parameters.reduce(Hash.new(initial_count = 0)) { |result, parameter| result[parameter.first] += 1; result }
+    min_positional_parameters = parameter_counts[:req]
+    max_positional_parameters = parameter_counts[:req] + parameter_counts[:opt]
 
     (min_positional_parameters..max_positional_parameters).include? arguments.count
   end
