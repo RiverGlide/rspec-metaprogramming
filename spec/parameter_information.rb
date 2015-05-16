@@ -2,20 +2,22 @@ def nullary();end
 def required_position(one);end
 def optional_position(one=nil);end
 
-RSpec::Matchers.define :satisfy_the_definition_of do |expected|
-  match do |actual|
-    required_positional_parameters = expected.parameters.select { |p| p.first == :req }.count
-    actual.count == required_positional_parameters
-    #count up the number of positional parameters and subtract the number of optional parameters
-    #(required)..(required + optional)
+RSpec::Matchers.define :satisfy_the_definition_of do |method|
+  match do |arguments|
+    required_positional_parameters = method.parameters.select { |p| p.first == :req }.count
+    optional_positional_parameters = method.parameters.select { |p| p.first == :opt }.count
+    min_positional_parameters = required_positional_parameters
+    max_positional_parameters = required_positional_parameters + optional_positional_parameters
+
+    (min_positional_parameters..max_positional_parameters).include? arguments.count
   end
 
-  failure_message do |actual|
-    "expected that #{actual} would match the definition of the method `#{expected.name}`: \n#{expected.parameters}"
+  failure_message do |arguments|
+    "expected that #{arguments} would match the definition of the method `#{method.name}`: \n#{method.parameters}"
   end
 
-  failure_message_when_negated do |actual|
-    "expected that #{actual} would not match the definition of the method `#{expected.name}`: \n#{expected.parameters}"
+  failure_message_when_negated do |arguments|
+    "expected that #{arguments} would not match the definition of the method `#{method.name}`: \n#{method.parameters}"
   end
 
   # description when they don't match
@@ -38,4 +40,10 @@ describe "parameter matcher" do
     empty_parameter_list = []
     expect(empty_parameter_list).not_to satisfy_the_definition_of(method(:required_position))
   end
+
+  it "matches on a single parameter and an optional positional parameter" do
+    a_single_parameter = [""]
+    expect(a_single_parameter).to satisfy_the_definition_of(method(:optional_position))
+  end
+
 end
